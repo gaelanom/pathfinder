@@ -7,9 +7,13 @@ import com.jagrosh.jdautilities.*;
 import net.dv8tion.jda.core.managers.GuildController;
 
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
@@ -30,13 +34,23 @@ public class Main extends ListenerAdapter {
         CommandClient client = builder.build();
 
         JDABuilder bot = new JDABuilder(AccountType.BOT);
-        //String token = "NTU2MjAxMjIyNTg4MDcxOTU1.D22UFg.XpLUA2NxPBS8MspNZ1DqZ0RPjBM";
-        String token = "ODgwMjYxMDA4ODg1Njk4NTYw.YSbs8g.DBe7VZ1qt7VffEG53HusfFJk73E";
+        String token = getToken();
         bot.setToken(token);
         bot.addEventListener(client);
         bot.build();
     }
 
+    private static String getToken(){
+        String token = "Token not found";
+        try(InputStream input = new FileInputStream("src/main/resources/config.properties")) {
+            Properties properties = new Properties();
+            properties.load(input);
+            token = properties.getProperty("token");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+        return token;
+    }
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) {
